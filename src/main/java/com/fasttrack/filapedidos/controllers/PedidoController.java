@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,4 +53,20 @@ public class PedidoController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(pedidoModelOptional.get());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updatePedido(@PathVariable(value = "id") UUID id,
+                                               @RequestBody @Valid PedidoDto pedidoDto) {
+        Optional<PedidoModel> pedidoModelOptional = pedidosService.findById(id);
+        if(!pedidoModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
+        }
+        PedidoModel pedidoModel = new PedidoModel();
+        BeanUtils.copyProperties(pedidoDto, pedidoModel);
+        pedidoModel.setDt_criacao(pedidoModelOptional.get().getDt_criacao());
+        pedidoModel.setCd_pedido(pedidoModelOptional.get().getCd_pedido());
+        pedidoModel.setDt_atualizacao(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.OK).body(pedidosService.save(pedidoModel));
+    }
+
 }
