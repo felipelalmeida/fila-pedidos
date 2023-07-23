@@ -29,4 +29,8 @@ public class PedidosService {
     public Optional<PedidoModel> findById(UUID id) {
         return pedidoRepository.findById(id);
     }
+
+    public void delete(PedidoModel pedidoModel) {
+        pedidoRepository.delete(pedidoModel);
+    }
 }
