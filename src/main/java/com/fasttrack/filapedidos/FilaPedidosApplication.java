@@ -12,10 +12,4 @@ public class FilaPedidosApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FilaPedidosApplication.class, args);
 	}
-
-	@GetMapping("/")
-	public String index(){
-		return "Fila de pedidos index!";
-	}
-
 }
