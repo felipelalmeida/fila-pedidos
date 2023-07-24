@@ -1,13 +1,12 @@
 package com.fasttrack.filapedidos.controllers;
 
-import com.fasttrack.filapedidos.dtos.PedidoDto;
-import com.fasttrack.filapedidos.models.PedidoModel;
-import com.fasttrack.filapedidos.services.PedidosService;
+import com.fasttrack.filapedidos.dtos.OrderDto;
+import com.fasttrack.filapedidos.models.OrderModel;
+import com.fasttrack.filapedidos.services.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,29 +25,29 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/pedido")
-public class PedidoController {
+@RequestMapping("/order")
+public class OrderController {
 
     @Autowired
-    PedidosService pedidosService;
+    OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<PedidoModel> savePedido(@RequestBody @Valid PedidoDto pedidoDto) {
-        PedidoModel pedidoModel = new PedidoModel();
-        BeanUtils.copyProperties(pedidoDto, pedidoModel);
-        pedidoModel.setDt_criacao(LocalDateTime.now());
-        pedidoModel.setDt_atualizacao(LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidosService.save(pedidoModel));
+    public ResponseEntity<OrderModel> savePedido(@RequestBody @Valid OrderDto orderDto) {
+        OrderModel orderModel = new OrderModel();
+        BeanUtils.copyProperties(orderDto, orderModel);
+        orderModel.setDt_criacao(LocalDateTime.now());
+        orderModel.setDt_atualizacao(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderModel));
     }
 
     @GetMapping
-    public ResponseEntity<Page<PedidoModel>> getAllPedidos(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(pedidosService.findAll(pageable));
+    public ResponseEntity<Page<OrderModel>> getAllPedidos(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getOnePedido(@PathVariable(value = "id") UUID id) {
-        Optional<PedidoModel> pedidoModelOptional = pedidosService.findById(id);
+        Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
         }
@@ -57,26 +56,26 @@ public class PedidoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updatePedido(@PathVariable(value = "id") UUID id,
-                                               @RequestBody @Valid PedidoDto pedidoDto) {
-        Optional<PedidoModel> pedidoModelOptional = pedidosService.findById(id);
+                                               @RequestBody @Valid OrderDto orderDto) {
+        Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
         }
-        PedidoModel pedidoModel = new PedidoModel();
-        BeanUtils.copyProperties(pedidoDto, pedidoModel);
-        pedidoModel.setDt_criacao(pedidoModelOptional.get().getDt_criacao());
-        pedidoModel.setCd_pedido(pedidoModelOptional.get().getCd_pedido());
-        pedidoModel.setDt_atualizacao(LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.OK).body(pedidosService.save(pedidoModel));
+        OrderModel orderModel = new OrderModel();
+        BeanUtils.copyProperties(orderDto, orderModel);
+        orderModel.setDt_criacao(pedidoModelOptional.get().getDt_criacao());
+        orderModel.setCd_pedido(pedidoModelOptional.get().getCd_pedido());
+        orderModel.setDt_atualizacao(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.save(orderModel));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePedido(@PathVariable(value = "id") UUID id) {
-        Optional<PedidoModel> pedidoModelOptional = pedidosService.findById(id);
+        Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
         }
-        pedidosService.delete(pedidoModelOptional.get());
+        orderService.delete(pedidoModelOptional.get());
         return ResponseEntity.status(HttpStatus.OK).body("Pedido deletado com sucesso!");
     }
 }

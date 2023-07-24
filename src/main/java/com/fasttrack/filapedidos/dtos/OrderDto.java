@@ -4,11 +4,10 @@ import lombok.Data;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
-public class PedidoDto {
+public class OrderDto {
 
     @DecimalMin("0.0")
     private Float vr_pedido;

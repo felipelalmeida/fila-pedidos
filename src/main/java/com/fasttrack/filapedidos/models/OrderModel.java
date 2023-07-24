@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "PEDIDOS")
 @Setter
 @Getter
-public class PedidoModel implements Serializable {
+public class OrderModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
