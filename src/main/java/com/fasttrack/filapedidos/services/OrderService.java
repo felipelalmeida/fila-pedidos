@@ -30,6 +30,7 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
+    @Transactional
     public void delete(OrderModel orderModel) {
         orderRepository.delete(orderModel);
     }
