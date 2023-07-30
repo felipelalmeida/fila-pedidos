@@ -3,6 +3,8 @@ package com.fasttrack.filapedidos.controllers;
 import com.fasttrack.filapedidos.dtos.OrderDto;
 import com.fasttrack.filapedidos.models.OrderModel;
 import com.fasttrack.filapedidos.services.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,17 +33,21 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     @PostMapping
     public ResponseEntity<OrderModel> savePedido(@RequestBody @Valid OrderDto orderDto) {
         OrderModel orderModel = new OrderModel();
         BeanUtils.copyProperties(orderDto, orderModel);
         orderModel.setDt_criacao(LocalDateTime.now());
         orderModel.setDt_atualizacao(LocalDateTime.now());
+        logger.info("Order created successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderModel));
     }
 
     @GetMapping
     public ResponseEntity<Page<OrderModel>> getAllPedidos(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        logger.info("Looking for all orders");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.findAll(pageable));
     }
 
@@ -49,8 +55,10 @@ public class OrderController {
     public ResponseEntity<Object> getOnePedido(@PathVariable(value = "id") UUID id) {
         Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
+            logger.warn("Order not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found!");
         }
+        logger.info("Looking for order with id: " + id);
         return ResponseEntity.status(HttpStatus.OK).body(pedidoModelOptional.get());
     }
 
@@ -59,13 +67,15 @@ public class OrderController {
                                                @RequestBody @Valid OrderDto orderDto) {
         Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
+            logger.warn("Order not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found!");
         }
         OrderModel orderModel = new OrderModel();
         BeanUtils.copyProperties(orderDto, orderModel);
         orderModel.setDt_criacao(pedidoModelOptional.get().getDt_criacao());
         orderModel.setCd_pedido(pedidoModelOptional.get().getCd_pedido());
         orderModel.setDt_atualizacao(LocalDateTime.now());
+        logger.info("Order updated");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.save(orderModel));
     }
 
@@ -73,10 +83,12 @@ public class OrderController {
     public ResponseEntity<Object> deletePedido(@PathVariable(value = "id") UUID id) {
         Optional<OrderModel> pedidoModelOptional = orderService.findById(id);
         if(!pedidoModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pedido não encontrado!");
+            logger.warn("Order not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found!");
         }
         orderService.delete(pedidoModelOptional.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Pedido deletado com sucesso!");
+        logger.info("Order deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("Order deleted successfully!");
     }
 
 }
