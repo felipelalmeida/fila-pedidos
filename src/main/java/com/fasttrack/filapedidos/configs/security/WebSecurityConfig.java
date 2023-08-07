@@ -1,4 +1,4 @@
-package com.fasttrack.filapedidos.config.security;
+package com.fasttrack.filapedidos.configs.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

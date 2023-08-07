@@ -4,8 +4,8 @@ import com.fasttrack.filapedidos.dtos.OrderDto;
 import com.fasttrack.filapedidos.models.OrderModel;
 import com.fasttrack.filapedidos.services.OrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,6 +35,9 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
     @PostMapping
     public ResponseEntity<OrderModel> savePedido(@RequestBody @Valid OrderDto orderDto) {
         OrderModel orderModel = new OrderModel();
@@ -42,6 +45,9 @@ public class OrderController {
         orderModel.setDt_criacao(LocalDateTime.now());
         orderModel.setDt_atualizacao(LocalDateTime.now());
         log.info("Order created successfully");
+        String queue = "order.order-created";
+        Message message = new Message(orderDto.toString().getBytes());
+        rabbitTemplate.send(queue, message);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderModel));
     }
 
@@ -76,6 +82,9 @@ public class OrderController {
         orderModel.setCd_pedido(pedidoModelOptional.get().getCd_pedido());
         orderModel.setDt_atualizacao(LocalDateTime.now());
         log.info("Order updated");
+        String queue = "order.order-updated";
+        Message message = new Message(orderDto.toString().getBytes());
+        rabbitTemplate.send(queue, message);
         return ResponseEntity.status(HttpStatus.OK).body(orderService.save(orderModel));
     }
 
