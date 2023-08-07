@@ -1,4 +1,4 @@
-package com.fasttrack.filapedidos.config.security;
+package com.fasttrack.filapedidos.configs.security;
 
 import com.fasttrack.filapedidos.models.UserModel;
 import com.fasttrack.filapedidos.repositories.UserRepository;
