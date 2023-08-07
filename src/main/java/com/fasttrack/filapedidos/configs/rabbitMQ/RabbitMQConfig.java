@@ -12,12 +12,12 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     @Bean
     public Queue queueCreate() {
-        return new Queue("order.order-created", true);
+        return new Queue("orders.order-created", true);
     }
 
     @Bean
     public Queue queueUpdate() {
-        return new Queue("order.order-updated", true);
+        return new Queue("orders.order-updated", true);
     }
 
     @Bean

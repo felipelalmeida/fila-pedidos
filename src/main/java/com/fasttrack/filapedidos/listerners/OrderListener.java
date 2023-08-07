@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderListener {
 
-    @RabbitListener(queues = "order.order-created")
+    @RabbitListener(queues = "orders.order-created")
     public void onOrderCreated(String message) {
         log.info("RabbitMQ, order created: " + message);
     }
 
-    @RabbitListener(queues = "order.order-updated")
+    @RabbitListener(queues = "orders.order-updated")
     public void onOrderUpdated(String message) {
         log.info("RabbitMQ, order updated: " + message);
     }
