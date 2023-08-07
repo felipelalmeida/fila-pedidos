@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -37,6 +38,12 @@ public class OrderController {
     @Autowired
     RabbitTemplate rabbitTemplate;
 
+    @Value("${rabbitmq.queue.order-created}")
+    private String queueOrderCreated;
+
+    @Value("${rabbitmq.queue.order-updated}")
+    private String queueOrderUpdated;
+
     @PostMapping
     public ResponseEntity<OrderModel> saveOrder(@RequestBody @Valid OrderDto orderDto) {
         OrderModel orderModel = new OrderModel();
@@ -44,8 +51,7 @@ public class OrderController {
         orderModel.setDt_criacao(LocalDateTime.now());
         orderModel.setDt_atualizacao(LocalDateTime.now());
         log.info("Order created successfully");
-        String queue = "orders.order-created";
-        rabbitTemplate.convertAndSend(queue, orderDto);
+        rabbitTemplate.convertAndSend(queueOrderCreated, orderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderModel));
     }
 
@@ -80,8 +86,7 @@ public class OrderController {
         orderModel.setCd_pedido(orderModelOptional.get().getCd_pedido());
         orderModel.setDt_atualizacao(LocalDateTime.now());
         log.info("Order updated");
-        String queue = "orders.order-updated";
-        rabbitTemplate.convertAndSend(queue, orderDto);
+        rabbitTemplate.convertAndSend(queueOrderUpdated, orderDto);
         return ResponseEntity.status(HttpStatus.OK).body(orderService.save(orderModel));
     }
 
